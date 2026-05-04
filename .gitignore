@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Env files (mai versionare)
+.env
+.env.local
+.env.*.local
+
+# Dependencies (gestiti da subfolders, ma per sicurezza)
+node_modules/
+vendor/
+
+# Build artifacts
+dist/
+.output/
+.nuxt/
