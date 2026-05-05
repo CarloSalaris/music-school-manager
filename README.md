@@ -6,7 +6,7 @@ Tracks students, teachers, courses, individual & group lessons, recitals.
 ## Stack
 
 - **Frontend**: Nuxt 4 (SPA mode) · Vue 3 Composition API · Pinia · PrimeVue · Tailwind
-- **Backend**: Laravel 11 · MySQL 8 · REST API
+- **Backend**: Laravel 13 · MySQL · REST API
 - **Infra**: Docker Compose for local dev
 
 ## Status
