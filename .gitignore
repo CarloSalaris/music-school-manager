@@ -20,3 +20,6 @@ vendor/
 dist/
 .output/
 .nuxt/
+
+# Claude
+.claude/
