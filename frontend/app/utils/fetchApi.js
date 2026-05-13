@@ -1,5 +1,4 @@
-/* eslint-disable no-undef */
-// useAuthStore is a Nuxt auto-import not visible to ESLint in .js files
+import { useAuthStore } from "~/stores/auth";
 
 export const fetchApi = {
   get: request("GET"),
