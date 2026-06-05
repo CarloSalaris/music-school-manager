@@ -32,13 +32,18 @@ export default defineNuxtConfig({
   ssr: false,
 
   // Tailwind CSS v4 via Vite plugin
-  css: ["./app/assets/css/main.css"],
+  css: ["primeicons/primeicons.css", "./app/assets/css/main.css"],
   vite: {
     plugins: [tailwindcss()],
   },
 
   // Modules
-  modules: ["@pinia/nuxt", "@primevue/nuxt-module", "@nuxt/eslint", "@vueuse/nuxt"],
+  modules: [
+    "@pinia/nuxt",
+    "@primevue/nuxt-module",
+    "@nuxt/eslint",
+    "@vueuse/nuxt",
+  ],
 
   // PrimeVue configuration
   primevue: {
