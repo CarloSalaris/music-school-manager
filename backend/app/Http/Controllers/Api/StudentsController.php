@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
@@ -29,6 +31,39 @@ class StudentsController extends Controller
                 'current_page' => $students->currentPage(),
                 'last_page' => $students->lastPage(),
             ],
+        ]);
+    }
+
+    public function view(Student $student)
+    {
+        return response()->json($student);
+    }
+
+    public function add(StoreStudentRequest $request)
+    {
+        $student = Student::create($request->validated());
+
+        return response()->json([
+            'data' => $student,
+        ], 201);
+    }
+
+    public function edit(UpdateStudentRequest $request, Student $student)
+    {
+        $student->update($request->validated());
+
+        return response()->json([
+            'data' => $student->fresh(),
+        ]);
+    }
+
+    public function delete(Request $request)
+    {
+        $student = Student::findOrFail($request->input('id'));
+        $student->delete();
+
+        return response()->json([
+            'message' => 'Allievo eliminato',
         ]);
     }
 }
