@@ -48,6 +48,9 @@ export default defineNuxtConfig({
   // PrimeVue configuration
   primevue: {
     autoImport: true,
+    composables: {
+      exclude: ["useConfirm"], // Uses custom in useAlert.ts
+    },
     options: {
       ripple: true,
       theme: {
