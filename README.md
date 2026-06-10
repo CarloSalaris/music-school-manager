@@ -3,6 +3,9 @@
 Full-stack management system for a small/medium music school.
 Tracks students, teachers, courses, individual & group lessons, recitals.
 
+> 🚧 **Early work in progress.** First full CRUD (Students) is working end-to-end.
+> Built incrementally as a portfolio project — see [roadmap](#features) for what's next.
+
 ## Demo
 
 ![CRUD demo](./.github/assets/first-crud-demo.gif)
@@ -93,10 +96,6 @@ Open the project folder — Docker, backend, and frontend start automatically vi
 | Frontend    | http://localhost:3000 |
 | Backend API | http://localhost:8000 |
 | phpMyAdmin  | http://localhost:8080 |
-
-## Status
-
-🚧 Work in progress — first full CRUD (Students) is working end-to-end. See roadmap above.
 
 ## Architecture
 
