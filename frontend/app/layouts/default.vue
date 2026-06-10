@@ -3,6 +3,7 @@
     <!-- TODO: Sidebar + Navbar will go here -->
     <main class="p-6">
       <slot />
+      <DynamicDialog />
     </main>
   </div>
 </template>

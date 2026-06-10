@@ -5,7 +5,7 @@ import type {
   SweetAlertPosition,
 } from "sweetalert2";
 
-const position: SweetAlertPosition = "top";
+const position: SweetAlertPosition = "center";
 const confirmOptions = {
   title: "Conferma l'operazione",
   position,

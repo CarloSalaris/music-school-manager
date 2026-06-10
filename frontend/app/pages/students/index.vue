@@ -2,7 +2,12 @@
   <div class="max-w-6xl mx-auto p-6">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-gray-800">Allievi</h1>
-      <Button label="Aggiungi allievo" severity="primary" disabled />
+      <Button
+        label="Aggiungi allievo"
+        severity="primary"
+        icon="pi pi-plus"
+        @click="onAdd"
+      />
     </div>
 
     <div v-if="loading" class="text-gray-500 py-4">Caricamento in corso...</div>
@@ -17,10 +22,13 @@
         :value="list"
         :paginator="true"
         :rows="10"
+        striped-rows
+        selection-mode="single"
         :rows-per-page-options="[10, 25, 50]"
         :loading="loading"
         paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         current-page-report-template="Visualizzazione {first} a {last} di {totalRecords} allievi"
+        @row-select="onRowSelect"
       >
         <Column field="nome" header="Nome" :sortable="true" />
         <Column field="cognome" header="Cognome" :sortable="true" />
@@ -44,17 +52,57 @@
 </template>
 
 <script setup>
+import { markRaw } from "vue";
 import studentsService from "~/services/studentsService";
+import StudentsForm from "~/components/Students/StudentsForm.vue";
 
 definePageMeta({
   layout: "default",
 });
 
-const { list, loading, error, pagination, fetchList } =
-  useList(studentsService);
+const {
+  list,
+  loading,
+  error,
+  pagination,
+  fetchList,
+  activateEventListener,
+  deactivateEventListener,
+} = useList(studentsService);
+
+const modal = useModal();
+const modalConfig = {
+  title: "$$ allievo",
+  model: "students",
+  component: markRaw(StudentsForm),
+  event: "Students:refreshList",
+  size: "lg",
+};
+function onAdd() {
+  modal.open({
+    ...modalConfig,
+  });
+}
+
+function onEdit(id) {
+  modal.open({
+    ...modalConfig,
+    id,
+    showDelete: true,
+  });
+}
+
+function onRowSelect(event) {
+  onEdit(event.data.id);
+}
 
 onMounted(() => {
+  activateEventListener();
   fetchList();
-  console.log(list);
+  // console.log(list);
+});
+
+onBeforeUnmount(() => {
+  deactivateEventListener();
 });
 </script>

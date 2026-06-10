@@ -67,9 +67,11 @@ export default defineNuxtConfig({
   },
 
   // Pinia persisted state
-  pinia: {
-    storesDirs: ["./app/stores/**"],
-  },
+  // Pinia storesDirs not needed: Nuxt 4 auto-imports from app/stores/ by default.
+  // Setting it with the wrong path actually breaks auto-import.
+  /* pinia: {
+  storesDirs: ["./stores/**"],
+}, */
 
   // Runtime config — API base URL
   runtimeConfig: {
