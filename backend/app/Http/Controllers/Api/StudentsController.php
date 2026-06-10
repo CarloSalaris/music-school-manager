@@ -36,7 +36,9 @@ class StudentsController extends Controller
 
     public function view(Student $student)
     {
-        return response()->json($student);
+        return response()->json([
+            'data' => $student
+        ]);
     }
 
     public function add(StoreStudentRequest $request)
