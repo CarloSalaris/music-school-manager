@@ -3,11 +3,34 @@
 Full-stack management system for a small/medium music school.
 Tracks students, teachers, courses, individual & group lessons, recitals.
 
+## Demo
+
+![CRUD demo](./.github/assets/first-crud-demo.gif)
+
 ## Stack
 
 - **Frontend**: Nuxt 4 (SPA mode) · Vue 3 Composition API · Pinia · PrimeVue · Tailwind CSS v4
 - **Backend**: Laravel 13 · PHP 8.5 · MySQL 8 · REST API
 - **Infra**: Docker Compose (MySQL + phpMyAdmin)
+
+## Features
+
+Current (`v0.1.0`):
+
+- Full CRUD for Students (list, create, edit, delete)
+- Paginated, sortable data table
+- Modal-driven forms with centralized submit/delete handling
+- Recursive dirty tracking (only declared fields, treats `null`/`""` as equal)
+- Service-driven architecture: each entity declares its config, composables consume it
+- Event-bus-based list refresh after mutations
+- Server-side validation via Laravel Form Requests
+
+Roadmap:
+
+- Authentication & role-based access
+- Instruments, Teachers, Lessons, Enrollments, Attendance, Recitals
+- Filters, lookups, and saved filter presets
+- Tests (Vitest for composables, Pest for API)
 
 ## Prerequisites
 
@@ -41,7 +64,7 @@ cd backend && composer install && cd ..
 # 3. Configure backend
 cp backend/.env.example backend/.env
 # Edit backend/.env with your DB credentials (see docker-compose.yml)
-cd backend && php artisan migrate --seed && cd ..
+cd backend && php artisan key:generate && php artisan migrate --seed && cd ..
 
 # 4. Start servers
 cd backend && php artisan serve &
@@ -73,7 +96,7 @@ Open the project folder — Docker, backend, and frontend start automatically vi
 
 ## Status
 
-🚧 Work in progress — first end-to-end data flow is working (students list from API to browser).
+🚧 Work in progress — first full CRUD (Students) is working end-to-end. See roadmap above.
 
 ## Architecture
 
