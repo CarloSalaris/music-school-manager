@@ -7,7 +7,7 @@
       <!-- Footer with actions -->
       <div
         v-if="modalConfig.showFooter"
-        class="flex items-center justify-between gap-2 pt-4 mt-4 border-t border-gray-200"
+        class="flex items-center justify-between gap-2 pt-4 mt-4 border-t border-surface-200 dark:border-surface-700"
       >
         <!-- Delete button (left) -->
         <div>

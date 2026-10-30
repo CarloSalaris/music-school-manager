@@ -1,6 +1,6 @@
 <template>
   <header
-    class="flex items-center gap-3 px-4 h-14 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+    class="flex items-center gap-3 px-4 h-14 border-b border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-900"
   >
     <!-- Hamburger: toggles the overlay sidebar -->
     <Button
@@ -12,7 +12,7 @@
     />
 
     <!-- App title -->
-    <span class="font-semibold text-lg text-gray-800 dark:text-gray-100">
+    <span class="font-semibold text-lg text-surface-900 dark:text-surface-0">
       Music School Manager
     </span>
 

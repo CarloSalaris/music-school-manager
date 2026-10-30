@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full">
     <!-- Logo / brand -->
     <div
-      class="flex items-center gap-2 px-2 pb-4 mb-2 border-b border-gray-200 dark:border-gray-700"
+      class="flex items-center gap-2 px-2 pb-4 mb-2 border-b border-surface-200 dark:border-surface-700"
     >
       <i class="pi pi-building text-xl" />
       <span class="font-semibold text-lg">Music School</span>

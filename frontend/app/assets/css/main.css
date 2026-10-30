@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Share PrimeVue's design tokens with Tailwind (surface-*, text-muted-color,
+   primary, ...) so custom markup matches the component theme in both modes. */
+@plugin "tailwindcss-primeui";
 
 /* Drive Tailwind's dark: variant from the .dark-mode class on <html>
    (set by ThemeStore), matching PrimeVue's darkModeSelector — not the OS. */

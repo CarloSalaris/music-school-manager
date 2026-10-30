@@ -1,10 +1,10 @@
 <template>
   <div class="max-w-5xl mx-auto">
-    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+    <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-6">
       Dashboard
     </h1>
 
-    <div v-if="loading" class="text-gray-500 dark:text-gray-400 py-4">
+    <div v-if="loading" class="text-muted-color py-4">
       Caricamento in corso...
     </div>
 
@@ -19,9 +19,7 @@
             <div class="flex items-end gap-8">
               <div>
                 <div class="text-4xl font-bold">{{ stats.active }}</div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                  Iscritti attivi
-                </div>
+                <div class="text-sm text-muted-color">Iscritti attivi</div>
               </div>
 
               <!-- TODO: make this clickable to the students list filtered by

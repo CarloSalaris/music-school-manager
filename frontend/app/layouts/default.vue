@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen bg-surface-50 dark:bg-surface-950">
     <AppTopbar />
 
     <!-- Overlay sidebar: fully collapses, driven by the ui store -->
