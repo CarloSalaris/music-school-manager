@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('students')->group(function () {
     // Route::get('/', [StudentsController::class, 'index']);
+    Route::get('/stats', [StudentsController::class, 'stats']);
     Route::post('/index', [StudentsController::class, 'index']); // POST because I will add filters
     Route::get('/view/{student}', [StudentsController::class, 'view']);
     Route::post('/add', [StudentsController::class, 'add']);

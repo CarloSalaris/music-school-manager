@@ -10,6 +10,16 @@ use Illuminate\Http\Request;
 
 class StudentsController extends Controller
 {
+    public function stats()
+    {
+        return response()->json([
+            'data' => [
+                'total' => Student::count(),
+                'active' => Student::where('attivo', true)->count(),
+            ],
+        ]);
+    }
+
     public function index(Request $request)
     {
         $query = Student::query();
