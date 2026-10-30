@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Drive Tailwind's dark: variant from the .dark-mode class on <html>
+   (set by ThemeStore), matching PrimeVue's darkModeSelector — not the OS. */
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+
 .swal2-container {
   z-index: 9999 !important;
 }
