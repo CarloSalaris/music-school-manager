@@ -1,6 +1,6 @@
 <template>
   <header
-    class="flex items-center gap-3 px-4 h-14 border-b border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-900"
+    class="flex items-center gap-3 px-4 h-14 border-b border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-800"
   >
     <!-- Hamburger: toggles the overlay sidebar -->
     <Button

@@ -1,5 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
-import Aura from "@primeuix/themes/aura";
+import { AppPreset } from "./app/theme/preset";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -54,7 +54,7 @@ export default defineNuxtConfig({
     options: {
       ripple: true,
       theme: {
-        preset: Aura,
+        preset: AppPreset,
         options: {
           darkModeSelector: ".dark-mode",
           cssLayer: {

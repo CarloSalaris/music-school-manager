@@ -24,7 +24,7 @@
         :value="list"
         :paginator="true"
         :rows="10"
-        striped-rows
+        row-hover
         selection-mode="single"
         :rows-per-page-options="[10, 25, 50]"
         :loading="loading"

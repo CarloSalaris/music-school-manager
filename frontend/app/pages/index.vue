@@ -13,7 +13,9 @@
     <div v-else-if="stats" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <!-- One card per category; the whole card links to its list. -->
       <NuxtLink to="/students" class="block">
-        <Card class="cursor-pointer transition hover:shadow-lg">
+        <Card
+          class="cursor-pointer transition-all hover:shadow-md hover:ring-1 hover:ring-emerald-300"
+        >
           <template #title>Allievi</template>
           <template #content>
             <div class="flex items-end gap-8">
