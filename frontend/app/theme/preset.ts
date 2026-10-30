@@ -7,8 +7,8 @@ import type { PaletteDesignToken } from "@primeuix/themes/types";
 // tailwindcss-primeui utilities). Values are PrimeVue primitive palette names:
 //   primary: emerald | teal | sky | blue | indigo | violet | rose | amber ...
 //   neutral: zinc | slate | gray | neutral | stone
-const PRIMARY = "emerald"; // brand accent (matches Aura's default)
-const NEUTRAL = "zinc"; // surfaces / grays (Aura's light default is slate)
+const PRIMARY = "teal"; // (emerald matches Aura's default)
+const NEUTRAL = "gray"; // surfaces / grays (Aura's light default is slate)
 
 const SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
 
@@ -47,7 +47,10 @@ export const AppPreset = definePreset(Aura, {
         },
         overlay: {
           select: { background: "{surface.800}", borderColor: "{surface.700}" },
-          popover: { background: "{surface.800}", borderColor: "{surface.700}" },
+          popover: {
+            background: "{surface.800}",
+            borderColor: "{surface.700}",
+          },
           modal: { background: "{surface.800}", borderColor: "{surface.700}" },
         },
         list: {
