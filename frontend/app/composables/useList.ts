@@ -95,7 +95,7 @@ export const useList = (service: ServiceInterface) => {
     activeListeners.push({ event: eventName, handler });
   };
 
-  const deactivateEventListeners = () => {
+  const deactivateEventListener = () => {
     activeListeners.forEach(({ event, handler }) =>
       useStopListen(event, handler),
     );
@@ -117,6 +117,6 @@ export const useList = (service: ServiceInterface) => {
     setPage,
     setSort,
     activateEventListener,
-    deactivateEventListeners,
+    deactivateEventListener,
   };
 };
