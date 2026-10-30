@@ -9,8 +9,9 @@ Internal management system for a small music school (~100-200 students, 10-15 te
 - **Nuxt 4** (SPA mode, `ssr: false`)
 - **Vue 3 Composition API** with `<script setup>` — never Options API
 - **Pinia** with `pinia-plugin-persistedstate` for state management
-- **PrimeVue 4** with Aura theme for UI components
+- **PrimeVue 4** with a custom Aura-based preset (`app/theme/preset.ts`) for UI components
 - **Tailwind CSS v4** for styling (via `@tailwindcss/vite`)
+- **tailwindcss-primeui** bridges PrimeVue design tokens into Tailwind utilities (`surface-*`, `text-muted-color`, `primary`)
 - **TypeScript** strict in composables, services, types — pragmatic JS for plugins/utils where typing adds friction without value
 
 ### Backend (`backend/`)
@@ -37,7 +38,12 @@ This ensures unique auto-imported component names like `StudentsForm`, `Students
 - `app/types/serviceInterface.ts` — the shared contract
 
 ### Stores
-- `app/stores/auth.ts` exporting `useAuthStore` — file name lowercase, store name `useXxxStore`
+- `app/stores/auth.ts` exporting `useAuthStore` — file name lowercase, store name `useXxxStore` (Pinia id in PascalCase, e.g. `"UiStore"`)
+
+### Shell, config & theme
+- Structural/shell components use an `App` prefix: `AppTopbar`, `AppSidebar` (`app/components/`)
+- `app/config/navigation.ts` — typed `NavItem[]` (`{ label, icon, to }`) consumed by the sidebar
+- `app/theme/preset.ts` — the PrimeVue theme (single source of truth), wired in `nuxt.config.ts`
 
 ## Architectural patterns
 
@@ -63,6 +69,20 @@ Centralized Pinia store that caches dropdown/select options. Populated from API 
 ### Event bus for inter-component refresh
 Convention: `Model:action` (e.g. `Students:refreshList`, `Students:refreshForm`). Used to trigger refresh in sibling components after CRUD operations.
 
+### App shell
+- `layouts/default.vue` holds the shell: `AppTopbar`, an overlay PrimeVue `Drawer` hosting `AppSidebar`, the page `<slot />`, and `<DynamicDialog />` (required for modal-driven CRUD — keep it).
+- `stores/ui.ts` (`useUiStore`) holds `sidebarOpen` (not persisted).
+- Close the sidebar as a reaction to route changes **in the layout**, not inside the nav-link click — mutating shell state during the click tears down the Drawer mid-navigation and breaks it.
+
+### Theming & dark mode
+- One source of truth: `app/theme/preset.ts` wraps Aura via `definePreset` with `PRIMARY` / `NEUTRAL` knobs (primitive palette names) — change the whole palette from two strings.
+- Style custom markup with PrimeVue tokens (`surface-*`, `text-muted-color`, `bg-primary`, `ring-primary`) via `tailwindcss-primeui`, **not** hardcoded Tailwind grays, so it matches components in both schemes.
+- Dark mode: `stores/theme.ts` (`useThemeStore`) toggles the `.dark-mode` class on `<html>` (persisted to localStorage, OS fallback) and is initialized by a client plugin. Tailwind's `dark:` variant is bound to `.dark-mode` via `@custom-variant` in `main.css` (not the OS media query). Pair `dark:` with surface levels one step apart to keep an elevation hierarchy.
+
+### API calls
+- `$fetchApi` (from `app/utils/fetchApi`) concatenates `apiBaseUrl + url`, so paths passed to it **start with a leading slash** (e.g. `$fetchApi.get("/students/stats")`); `service.endpointApi` follows the same rule.
+- Responses are wrapped in `{ data: ... }`.
+
 ## Code style
 
 ### TypeScript usage
@@ -74,6 +94,7 @@ Convention: `Model:action` (e.g. `Students:refreshList`, `Students:refreshForm`)
 ### Styling
 - Tailwind utility classes in templates
 - PrimeVue components via auto-import (no manual import needed)
+- Use PrimeVue design tokens (`surface-*`, `text-muted-color`, `primary`) for themed surfaces/text, not fixed Tailwind grays (`gray-*`, `bg-white`) — they adapt to light/dark automatically
 - Avoid introducing new CSS frameworks without strong reason
 
 ### Vue patterns
@@ -88,6 +109,13 @@ Convention: `Model:action` (e.g. `Students:refreshList`, `Students:refreshForm`)
 - Don't put business logic in components — extract to composables or services
 - Don't mix English and Italian in user-facing strings
 - Don't write tests for trivial code — focus tests on composables and complex business logic
+- Don't hardcode light-only colors (`bg-white`, `gray-*`) on themed surfaces — use PrimeVue tokens
+- Don't pass paths without a leading slash to `$fetchApi`
+
+## Local development
+- Frontend dev server runs on **port 3000** only — the Laravel CORS config allows just `http://localhost:3000`. Start it with a plain `npm run dev` (never a positional port arg).
+- Backend: `php artisan serve` on `:8000`; MySQL runs in a Docker container (start it first).
+- Changes to `nuxt.config.ts`, `app/theme/preset.ts`, or Tailwind `@plugin`/`@custom-variant` require a dev server **restart** (HMR won't pick them up).
 
 ## Repository ethics
 This is a portfolio project. The architectural patterns are the developer's own (co-developed with a senior in past work), but the implementation must be original. Do not copy code from any specific previous project — extract patterns, then rewrite from scratch.
