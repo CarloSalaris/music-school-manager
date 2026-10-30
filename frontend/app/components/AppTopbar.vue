@@ -14,11 +14,23 @@
     <!-- App title -->
     <span class="font-semibold text-lg">Music School Manager</span>
 
-    <!-- Right-side actions (dark mode toggle lands here in Block 3) -->
-    <div class="ml-auto flex items-center gap-2" />
+    <!-- Right-side actions -->
+    <div class="ml-auto flex items-center gap-2">
+      <Button
+        :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
+        text
+        rounded
+        :aria-label="isDark ? 'Attiva tema chiaro' : 'Attiva tema scuro'"
+        @click="themeStore.toggle()"
+      />
+    </div>
   </header>
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
+
 const uiStore = useUiStore();
+const themeStore = useThemeStore();
+const { isDark } = storeToRefs(themeStore);
 </script>
