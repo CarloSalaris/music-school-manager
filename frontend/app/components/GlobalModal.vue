@@ -39,7 +39,29 @@
 <script setup lang="ts">
 import { inject } from "vue";
 
-const dialogRef = inject<{ value: any }>("dialogRef");
+type ModalForm = Record<string, unknown>;
+
+type DialogRef = {
+  value: {
+    data: {
+      modalConfig: {
+        component: string | object;
+        showFooter: boolean;
+        confirmText: string;
+        showDelete: boolean | ((form: ModalForm) => boolean);
+        submitOptions?: Record<string, unknown>;
+      };
+      submitForm: (
+        options: Record<string, unknown>,
+        form: ModalForm,
+      ) => Promise<ModalForm | null | undefined | false>;
+      fetchDelete: (id: unknown) => Promise<unknown>;
+    };
+    close: (result?: { action: string }) => void;
+  };
+};
+
+const dialogRef = inject<DialogRef>("dialogRef");
 const modalStore = useModalStore();
 
 const modalConfig = computed(() => dialogRef?.value.data.modalConfig);
