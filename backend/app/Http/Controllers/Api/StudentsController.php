@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Concerns\HandlesListQuery;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
@@ -10,6 +11,8 @@ use Illuminate\Http\Request;
 
 class StudentsController extends Controller
 {
+    use HandlesListQuery;
+
     public function stats()
     {
         return response()->json([
@@ -24,24 +27,25 @@ class StudentsController extends Controller
     {
         $query = Student::query();
 
-        // Sort
-        $sortField = $request->query('sort', 'cognome');
-        $sortDirection = $request->query('direction', 'ASC');
-        $query->orderBy($sortField, $sortDirection);
+        $this->applyFilters($query, $request);
+        $this->applySort($query, $request, 'cognome');
 
-        // Pagination
-        $perPage = $request->query('limit', 50);
-        $students = $query->paginate($perPage);
+        return $this->paginatedResponse($query, $request);
+    }
 
-        return response()->json([
-            'data' => $students->items(),
-            'pagination' => [
-                'total' => $students->total(),
-                'per_page' => $students->perPage(),
-                'current_page' => $students->currentPage(),
-                'last_page' => $students->lastPage(),
-            ],
-        ]);
+    protected function filterable(): array
+    {
+        return [
+            'search' => ['columns' => ['nome', 'cognome'], 'relative' => 'contains'],
+            'attivo' => ['columns' => ['attivo'], 'relative' => 'equals'],
+            'is_minorenne' => ['columns' => ['is_minorenne'], 'relative' => 'equals'],
+            'data_nascita' => ['columns' => ['data_nascita'], 'relative' => 'between'],
+        ];
+    }
+
+    protected function sortable(): array
+    {
+        return ['nome', 'cognome', 'email', 'telefono', 'attivo'];
     }
 
     public function view(Student $student)
