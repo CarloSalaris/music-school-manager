@@ -21,6 +21,8 @@ const italianLocale = {
     "Novembre",
     "Dicembre",
   ],
+  today: "Oggi",
+  clear: "Pulisci",
 };
 
 export default defineNuxtPlugin((nuxtApp) => {

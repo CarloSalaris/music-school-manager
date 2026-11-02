@@ -12,9 +12,10 @@
       />
     </div>
 
-    <div v-if="loading" class="text-muted-color py-4">Caricamento in corso...</div>
+    <!-- Outside the loading/error states so inputs keep focus while fetching -->
+    <StudentsFilters @change="applyFilters" />
 
-    <div v-else-if="error" class="text-red-600 py-4">{{ error }}</div>
+    <div v-if="error" class="text-red-600 py-4">{{ error }}</div>
 
     <div v-else>
       <p class="text-sm text-muted-color mb-3">
@@ -22,16 +23,28 @@
       </p>
       <DataTable
         :value="list"
-        :paginator="true"
-        :rows="10"
+        lazy
+        paginator
+        :rows="pagination.per_page"
+        :first="(pagination.current_page - 1) * pagination.per_page"
+        :total-records="pagination.total"
+        :sort-field="currentSort"
+        :sort-order="currentDirection === 'ASC' ? 1 : -1"
         row-hover
         selection-mode="single"
         :rows-per-page-options="[10, 25, 50]"
         :loading="loading"
         paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         current-page-report-template="Visualizzazione {first} a {last} di {totalRecords} allievi"
+        @page="onPage"
+        @sort="onSort"
         @row-select="onRowSelect"
       >
+        <template #empty>
+          <p class="text-muted-color py-4 text-center">
+            Nessun allievo corrisponde ai filtri selezionati
+          </p>
+        </template>
         <Column field="nome" header="Nome" :sortable="true" />
         <Column field="cognome" header="Cognome" :sortable="true" />
         <Column field="email" header="Email" :sortable="true" />
@@ -67,10 +80,29 @@ const {
   loading,
   error,
   pagination,
+  currentSort,
+  currentDirection,
   fetchList,
+  setPage,
+  setLimit,
+  setSort,
+  applyFilters,
   activateEventListener,
   deactivateEventListener,
 } = useList(studentsService);
+
+// DataTable is lazy: paging and sorting are delegated to the server via useList
+function onPage(event) {
+  if (event.rows !== pagination.value.per_page) {
+    setLimit(event.rows);
+  } else {
+    setPage(event.page + 1);
+  }
+}
+
+function onSort(event) {
+  setSort(event.sortField, event.sortOrder === 1 ? "ASC" : "DESC");
+}
 
 const modal = useModal();
 const modalConfig = {
