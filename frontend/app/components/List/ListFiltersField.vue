@@ -61,13 +61,14 @@
 // Renders one filter input according to its FilterConfig type.
 // Stateless: the value lives in FiltersStore, owned by the parent.
 const props = defineProps({
+  model: { type: String, required: true },
   config: { type: Object, required: true },
   modelValue: { type: [String, Array], default: null },
 });
 const emit = defineEmits(["update:modelValue"]);
 
 const type = computed(() => props.config.type ?? "text");
-const inputId = computed(() => `filter-${props.config.field}`);
+const inputId = computed(() => `filter-${props.model}-${props.config.field}`);
 const range = computed(() =>
   Array.isArray(props.modelValue) ? props.modelValue : [null, null],
 );

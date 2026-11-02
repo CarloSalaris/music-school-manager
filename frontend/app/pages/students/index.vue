@@ -13,7 +13,7 @@
     </div>
 
     <!-- Outside the loading/error states so inputs keep focus while fetching -->
-    <StudentsFilters @change="applyFilters" />
+    <ListFilters :model="studentsService.modelName" @change="applyFilters" />
 
     <div v-if="error" class="text-red-600 py-4">{{ error }}</div>
 

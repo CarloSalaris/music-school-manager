@@ -4,9 +4,10 @@
   >
     <!-- Quick filters: always visible -->
     <div class="flex flex-wrap items-end gap-3">
-      <StudentsFiltersField
+      <ListFiltersField
         v-for="config in quickFilters"
         :key="config.field"
+        :model="model"
         :config="config"
         :model-value="filtersStore.getFilterValue(model, config.field)"
         :class="config.type === 'text' ? 'min-w-64 flex-1' : 'w-48'"
@@ -22,7 +23,7 @@
           :badge="activeAdvancedCount ? String(activeAdvancedCount) : undefined"
           :outlined="!advancedOpen"
           :aria-expanded="advancedOpen"
-          aria-controls="students-advanced-filters"
+          :aria-controls="panelId"
           @click="advancedOpen = !advancedOpen"
         />
         <Button
@@ -38,12 +39,13 @@
     <!-- Advanced filters: collapsible panel -->
     <div
       v-show="advancedOpen"
-      id="students-advanced-filters"
+      :id="panelId"
       class="grid gap-3 mt-4 pt-4 border-t border-surface-200 dark:border-surface-700 sm:grid-cols-2 lg:grid-cols-3"
     >
-      <StudentsFiltersField
+      <ListFiltersField
         v-for="config in advancedFilters"
         :key="config.field"
+        :model="model"
         :config="config"
         :model-value="filtersStore.getFilterValue(model, config.field)"
         @update:model-value="onChange(config, $event)"
@@ -54,16 +56,21 @@
 
 <script setup>
 import debounce from "lodash-es/debounce";
-import studentsService from "~/services/studentsService";
 
 const SEARCH_DEBOUNCE_MS = 400;
 
-// Filter definitions are registered in FiltersStore by useList(studentsService);
-// this component only edits values and tells the page when to re-fetch.
+// Generic filter bar for any list. Filter definitions are registered in
+// FiltersStore by useList(service); this component only edits values and
+// tells the page when to re-fetch. Usage:
+//   <ListFilters :model="service.modelName" @change="applyFilters" />
+const props = defineProps({
+  model: { type: String, required: true },
+});
 const emit = defineEmits(["change"]);
 
 const filtersStore = useFiltersStore();
-const model = studentsService.modelName;
+const model = props.model;
+const panelId = `${model}-advanced-filters`;
 
 const configs = computed(() => filtersStore.getConfigs(model));
 const quickFilters = computed(() => configs.value.filter((c) => c.quick));
