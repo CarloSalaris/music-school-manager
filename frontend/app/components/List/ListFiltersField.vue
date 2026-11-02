@@ -33,8 +33,8 @@
     <div v-else-if="type === 'dateRange'" class="flex gap-2">
       <DatePicker
         :input-id="inputId"
-        :model-value="toDate(range[0])"
-        :max-date="toDate(range[1]) ?? undefined"
+        :model-value="parseIsoDate(range[0])"
+        :max-date="parseIsoDate(range[1]) ?? undefined"
         placeholder="Dal"
         date-format="dd/mm/yy"
         show-icon
@@ -43,8 +43,8 @@
         @update:model-value="onRangeChange(0, $event)"
       />
       <DatePicker
-        :model-value="toDate(range[1])"
-        :min-date="toDate(range[0]) ?? undefined"
+        :model-value="parseIsoDate(range[1])"
+        :min-date="parseIsoDate(range[0]) ?? undefined"
         :aria-label="`${config.label} (fino al)`"
         placeholder="Al"
         date-format="dd/mm/yy"
@@ -73,20 +73,7 @@ const range = computed(() =>
   Array.isArray(props.modelValue) ? props.modelValue : [null, null],
 );
 
-// Range ends are stored as local "YYYY-MM-DD" strings: serializing a Date
-// to JSON would convert it to UTC and could shift the day by one.
-function toDate(value) {
-  if (!value) return null;
-  const [y, m, d] = value.split("-").map(Number);
-  return new Date(y, m - 1, d);
-}
-
-function toIsoDate(date) {
-  if (!(date instanceof Date)) return null;
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
+// Range ends are stored as local "YYYY-MM-DD" strings (see utils/dates)
 function onRangeChange(index, date) {
   const next = [...range.value];
   next[index] = toIsoDate(date);

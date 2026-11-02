@@ -28,7 +28,7 @@ class Student extends Model
     ];
 
     protected $casts = [
-        'data_nascita' => 'date',
+        'data_nascita' => 'date:Y-m-d',
         'is_minorenne' => 'boolean',
         'attivo' => 'boolean',
     ];

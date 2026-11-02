@@ -27,7 +27,7 @@
       <div class="flex flex-col gap-1">
         <label class="text-sm font-medium text-surface-700 dark:text-surface-200">Data di nascita</label>
         <DatePicker
-          v-model="form.data_nascita"
+          v-model="dataNascita"
           date-format="dd/mm/yy"
           show-icon
         />
@@ -58,4 +58,12 @@ const modalStore = useModalStore();
 // The form reads from the ModalStore — it doesn't know it's inside a modal.
 // useModal() has already loaded the data here before opening GlobalModal.
 const form = computed(() => modalStore.form ?? {});
+
+// The form keeps the API's "YYYY-MM-DD" string; DatePicker works with Date
+const dataNascita = computed({
+  get: () => parseIsoDate(form.value.data_nascita),
+  set: (date) => {
+    form.value.data_nascita = toIsoDate(date);
+  },
+});
 </script>

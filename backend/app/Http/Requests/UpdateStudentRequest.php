@@ -27,7 +27,7 @@ class UpdateStudentRequest extends FormRequest
             'cognome' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'telefono' => 'nullable|string|max:20',
-            'data_nascita' => 'nullable|date',
+            'data_nascita' => 'nullable|date_format:Y-m-d',
             'codice_fiscale' => 'nullable|string|max:16',
             'indirizzo' => 'nullable|string|max:255',
             'citta' => 'nullable|string|max:255',
