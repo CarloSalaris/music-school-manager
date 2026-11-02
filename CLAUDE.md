@@ -66,6 +66,13 @@ Recursive comparison of declared fields only (those listed in `service.fields`).
 ### Lookup store
 Centralized Pinia store that caches dropdown/select options. Populated from API responses (every list/form response can include a `lookups` object).
 
+### List filters
+- Declared per entity in `service.filtersConfig` (`FilterConfig`): `quick: true` → always-visible bar, otherwise → collapsible "Filtri avanzati" panel.
+- `type` drives widget and default operator: `text` → `contains` (debounced), `select` → `equals` (static `options` until LookupStore exists), `dateRange` → `between` with `[from, to]` as local `"YYYY-MM-DD"` strings, either end `null` (open range). Never send `Date` objects (JSON → UTC shifts the day).
+- `stores/filters.ts` (`useFiltersStore`) holds values per model; `useList` registers the config (`initFilters`) and sends `getAppliedFilters()` in the POST body as `{ filters: { field: { value, relative } } }`. `clearFilters` resets to defaults, not to empty.
+- Virtual fields (e.g. `search` over nome + cognome) are allowed: the backend maps them to columns.
+- Backend: controllers `use HandlesListQuery` and whitelist `filterable()` (field → `columns` + `relative`) and `sortable()`. Unknown filters/operators → 422; unknown sort → default. Never pass request input to `orderBy` directly.
+
 ### Event bus for inter-component refresh
 Convention: `Model:action` (e.g. `Students:refreshList`, `Students:refreshForm`). Used to trigger refresh in sibling components after CRUD operations.
 
