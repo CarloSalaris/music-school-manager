@@ -32,7 +32,6 @@ class StoreStudentRequest extends FormRequest
             'indirizzo' => 'nullable|string|max:255',
             'citta' => 'nullable|string|max:255',
             'cap' => 'nullable|string|max:10',
-            'is_minorenne' => 'boolean',
             'genitore_nome' => 'nullable|string|max:255',
             'genitore_cognome' => 'nullable|string|max:255',
             'genitore_telefono' => 'nullable|string|max:20',

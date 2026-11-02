@@ -110,7 +110,6 @@ const studentsService: ServiceInterface = {
     { name: "indirizzo" },
     { name: "citta" },
     { name: "cap" },
-    { name: "is_minorenne", default: false },
     { name: "genitore_nome" },
     { name: "genitore_cognome" },
     { name: "genitore_telefono" },

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Student;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class StudentsController extends Controller
@@ -38,7 +39,12 @@ class StudentsController extends Controller
         return [
             'search' => ['columns' => ['nome', 'cognome'], 'relative' => 'contains'],
             'attivo' => ['columns' => ['attivo'], 'relative' => 'equals'],
-            'is_minorenne' => ['columns' => ['is_minorenne'], 'relative' => 'equals'],
+            'is_minorenne' => [
+                'relative' => 'equals',
+                'apply' => fn (Builder $query, $value) => $query->minorenne(
+                    $this->booleanValue($value, 'is_minorenne'),
+                ),
+            ],
             'data_nascita' => ['columns' => ['data_nascita'], 'relative' => 'between'],
         ];
     }

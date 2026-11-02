@@ -2,24 +2,27 @@
 
 namespace Database\Factories;
 
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
 class StudentFactory extends Factory
 {
     public function definition(): array
     {
-        $isMinorenne = $this->faker->boolean(30);
+        $dataNascita = Carbon::instance($this->faker->dateTimeBetween('-40 years', '-5 years'));
+        // Guardian details only make sense for minors
+        $isMinorenne = $dataNascita->age < Student::ADULT_AGE;
 
         return [
             'nome' => $this->faker->firstName(),
             'cognome' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'telefono' => $this->faker->phoneNumber(),
-            'data_nascita' => $this->faker->dateTimeBetween('-40 years', '-5 years')->format('Y-m-d'),
+            'data_nascita' => $dataNascita->format('Y-m-d'),
             'codice_fiscale' => strtoupper($this->faker->bothify('??????##?##?###?')),
             'citta' => $this->faker->city(),
             'cap' => $this->faker->postcode(),
-            'is_minorenne' => $isMinorenne,
             'genitore_nome' => $isMinorenne ? $this->faker->firstName() : null,
             'genitore_cognome' => $isMinorenne ? $this->faker->lastName() : null,
             'genitore_telefono' => $isMinorenne ? $this->faker->phoneNumber() : null,

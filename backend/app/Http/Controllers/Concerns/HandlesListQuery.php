@@ -22,10 +22,16 @@ trait HandlesListQuery
 
     /**
      * Filterable fields, keyed by the field name the frontend sends.
-     * - columns:  DB columns matched with OR (e.g. search over nome + cognome)
      * - relative: the operator the field accepts (contains | equals | between)
+     * - columns:  DB columns matched with OR (e.g. search over nome + cognome)
+     * - apply:    alternative to columns for derived fields (e.g. a model scope);
+     *             receives the query and the validated value
      *
-     * @return array<string, array{columns: list<string>, relative: 'contains'|'equals'|'between'}>
+     * @return array<string, array{
+     *     relative: 'contains'|'equals'|'between',
+     *     columns?: list<string>,
+     *     apply?: callable(Builder, mixed): void
+     * }>
      */
     abstract protected function filterable(): array;
 
@@ -47,17 +53,29 @@ trait HandlesListQuery
                 throw ValidationException::withMessages(["filters.$field" => 'Filtro non supportato.']);
             }
 
-            $value = $filter['value'] ?? null;
-            $columns = $definition['columns'];
+            $value = $this->validatedValue($definition['relative'], $filter['value'] ?? null, $field);
 
+            if (isset($definition['apply'])) {
+                $definition['apply']($query, $value);
+                continue;
+            }
+
+            $columns = $definition['columns'];
             match ($definition['relative']) {
-                'contains' => $this->whereContains($query, $columns, $value, $field),
-                'equals' => $this->whereEquals($query, $columns, $value, $field),
-                'between' => $this->whereDateBetween($query, $columns, $value, $field),
+                'contains' => $this->whereContains($query, $columns, $value),
+                'equals' => $query->whereAny($columns, '=', $value),
+                'between' => $this->whereDateBetween($query, $columns, $value),
             };
         }
 
         return $query;
+    }
+
+    /** Interprets a filter value as a boolean ("1"/"0", true/false); 422 otherwise. */
+    protected function booleanValue(mixed $value, string $field): bool
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE)
+            ?? $this->invalidValue($field);
     }
 
     protected function applySort(Builder $query, Request $request, string $defaultField): Builder
@@ -88,13 +106,24 @@ trait HandlesListQuery
         ]);
     }
 
-    /** Every word of the value must match at least one of the columns. */
-    private function whereContains(Builder $query, array $columns, mixed $value, string $field): void
+    /**
+     * Checks the value shape required by the operator:
+     * contains → string, equals → scalar, between → [from, to] of "Y-m-d" or null.
+     */
+    private function validatedValue(string $relative, mixed $value, string $field): mixed
     {
-        if (! is_string($value)) {
-            $this->invalidValue($field);
-        }
+        return match ($relative) {
+            'contains' => is_string($value) ? $value : $this->invalidValue($field),
+            'equals' => is_scalar($value) ? $value : $this->invalidValue($field),
+            'between' => is_array($value) && count($value) === 2
+                ? array_map(fn ($date) => $this->parseDate($date, $field), array_values($value))
+                : $this->invalidValue($field),
+        };
+    }
 
+    /** Every word of the value must match at least one of the columns. */
+    private function whereContains(Builder $query, array $columns, string $value): void
+    {
         $terms = preg_split('/\s+/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
         foreach ($terms as $term) {
             $escaped = addcslashes($term, '\\%_');
@@ -102,23 +131,10 @@ trait HandlesListQuery
         }
     }
 
-    private function whereEquals(Builder $query, array $columns, mixed $value, string $field): void
+    /** Open-ended range: either end may be null. */
+    private function whereDateBetween(Builder $query, array $columns, array $range): void
     {
-        if (! is_scalar($value)) {
-            $this->invalidValue($field);
-        }
-
-        $query->whereAny($columns, '=', $value);
-    }
-
-    /** Value is [from, to] as "Y-m-d" strings; either end may be null (open range). */
-    private function whereDateBetween(Builder $query, array $columns, mixed $value, string $field): void
-    {
-        if (! is_array($value) || count($value) !== 2) {
-            $this->invalidValue($field);
-        }
-
-        [$from, $to] = array_map(fn ($date) => $this->parseDate($date, $field), array_values($value));
+        [$from, $to] = $range;
         if ($from === null && $to === null) {
             return;
         }
