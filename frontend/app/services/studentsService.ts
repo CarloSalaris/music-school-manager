@@ -40,10 +40,6 @@ const studentsService: ServiceInterface = {
         field: "telefono",
       },
       {
-        label: "Strumento",
-        field: "instrument_name",
-      },
-      {
         label: "Stato",
         field: "attivo",
         formatter: "boolean",
@@ -61,32 +57,44 @@ const studentsService: ServiceInterface = {
     ],
   },
 
-  filtersConfig: (_user) => {
-    const filters = [
-      {
-        field: "search",
-        label: "Cerca",
-        type: "text",
-        quick: true,
-      },
-      {
-        field: "attivo",
-        label: "Stato",
-        type: "select",
-        lookup: "Students__attivo",
-        quick: true,
-        default: "1",
-      },
-      {
-        field: "instrument_id",
-        label: "Strumento",
-        type: "select",
-        lookup: "Instruments__list",
-      },
-    ];
+  filtersConfig: (_user) => [
+    // Quick filters — always visible
+    {
+      // Virtual field: the backend matches every word against nome/cognome
+      field: "search",
+      label: "Cerca per nome o cognome",
+      type: "text",
+      quick: true,
+    },
+    {
+      field: "attivo",
+      label: "Stato",
+      type: "select",
+      options: [
+        { label: "Attivi", value: "1" },
+        { label: "Non attivi", value: "0" },
+      ],
+      quick: true,
+      default: "1",
+    },
 
-    return filters;
-  },
+    // Advanced filters — collapsible panel
+    {
+      field: "is_minorenne",
+      label: "Minorenne",
+      type: "select",
+      options: [
+        { label: "Sì", value: "1" },
+        { label: "No", value: "0" },
+      ],
+    },
+    {
+      field: "data_nascita",
+      label: "Data di nascita",
+      type: "dateRange",
+      default: [null, null],
+    },
+  ],
 
   sortBy: ["cognome", "ASC"],
   perPage: 50,
@@ -107,7 +115,6 @@ const studentsService: ServiceInterface = {
     { name: "genitore_cognome" },
     { name: "genitore_telefono" },
     { name: "genitore_email" },
-    { name: "instrument_id" },
     { name: "attivo", default: true },
     { name: "note" },
   ],

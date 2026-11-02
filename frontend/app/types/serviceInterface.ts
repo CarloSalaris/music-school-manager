@@ -161,6 +161,32 @@ export interface MultiAction {
 // Filters — define available filters for the list
 // ---------------------------------------------------------------------------
 
+/**
+ * Filter input type — drives both the rendered widget and the default operator.
+ * - "text": free text input (debounced)
+ * - "select": single choice from `options` (or `lookup` once LookupStore exists)
+ * - "dateRange": [from, to] pair of "YYYY-MM-DD" strings, either end optional
+ */
+export type FilterType = "text" | "select" | "dateRange";
+
+/** Comparison operators understood by the backend list filtering. */
+export type FilterRelative = "contains" | "equals" | "between";
+
+/** Value held by a filter: scalar for text/select, [from, to] for dateRange. */
+export type FilterValue = string | null | [string | null, string | null];
+
+/** A static choice for select-type filters. */
+export interface FilterOption {
+  label: string;
+  value: string;
+}
+
+/** A filter as sent to the API in the list request body. */
+export interface AppliedFilter {
+  value: FilterValue;
+  relative: FilterRelative;
+}
+
 export interface FilterConfig {
   /** Field name sent to the API */
   field: string;
@@ -168,21 +194,20 @@ export interface FilterConfig {
   /** Display label */
   label?: string;
 
-  /** Default filter value. Defaults to "" */
-  default?: FieldDefault;
+  /** Default filter value. Defaults to null (no filter) */
+  default?: FilterValue;
 
   /**
-   * Default comparison operator.
-   * Examples: "contains", "equals", "gte", "lte"
-   * Defaults to "contains"
+   * Comparison operator sent with the value.
+   * Defaults by type: text → "contains", select → "equals", dateRange → "between"
    */
-  defaultRelative?: string;
+  defaultRelative?: FilterRelative;
 
-  /**
-   * Filter input type.
-   * Examples: "text", "select", "date", "dateRange", "boolean"
-   */
-  type?: string;
+  /** Filter input type. Defaults to "text" */
+  type?: FilterType;
+
+  /** Static choices for select-type filters (used until a lookup is available) */
+  options?: FilterOption[];
 
   /** Lookup key for select-type filters (e.g. "Departments__list") */
   lookup?: string;
@@ -195,9 +220,9 @@ export interface FilterConfig {
 
   /**
    * Custom function to decide if the filter value should be applied.
-   * Defaults to: (value) => value !== null && value !== ""
+   * Defaults to: non-empty scalar, or a range with at least one end set
    */
-  applyWhen?: ((value: unknown) => boolean);
+  applyWhen?: ((value: FilterValue) => boolean);
 }
 
 /**
@@ -205,6 +230,12 @@ export interface FilterConfig {
  * Example: admin sees all filters, agent sees only their own.
  */
 export type FiltersConfigFn = (user: { role: string }) => FilterConfig[];
+
+/** A named set of filter values applied together (e.g. "Active only"). */
+export interface FilterPreset {
+  label: string;
+  filters: Record<string, FilterValue>;
+}
 
 // ---------------------------------------------------------------------------
 // ServiceInterface — the main contract
@@ -246,7 +277,7 @@ export interface ServiceInterface {
   };
 
   /** Quick filter presets (e.g. "Active only", "This month") */
-  quickFilters?: { label: string; filters: Record<string, unknown> }[];
+  quickFilters?: FilterPreset[];
 
   /** Filter definitions — function receives current user */
   filtersConfig: FiltersConfigFn;
