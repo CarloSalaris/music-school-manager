@@ -68,10 +68,15 @@ Centralized Pinia store that caches dropdown/select options. Populated from API 
 
 ### List filters
 - Declared per entity in `service.filtersConfig` (`FilterConfig`): `quick: true` → always-visible bar, otherwise → collapsible "Filtri avanzati" panel.
-- `type` drives widget and default operator: `text` → `contains` (debounced), `select` → `equals` (static `options` until LookupStore exists), `dateRange` → `between` with `[from, to]` as local `"YYYY-MM-DD"` strings, either end `null` (open range). Never send `Date` objects (JSON → UTC shifts the day).
+- Rendered by the generic `List/ListFilters.vue` (`<ListFilters :model="service.modelName" @change="applyFilters" />`) — no per-entity filter components.
+- `type` drives widget and default operator: `text` → `contains` (debounced), `select` → `equals` (static `options` until LookupStore exists), `dateRange` → `between` with `[from, to]` as `"YYYY-MM-DD"` strings, either end `null` (open range).
 - `stores/filters.ts` (`useFiltersStore`) holds values per model; `useList` registers the config (`initFilters`) and sends `getAppliedFilters()` in the POST body as `{ filters: { field: { value, relative } } }`. `clearFilters` resets to defaults, not to empty.
 - Virtual fields (e.g. `search` over nome + cognome) are allowed: the backend maps them to columns.
-- Backend: controllers `use HandlesListQuery` and whitelist `filterable()` (field → `columns` + `relative`) and `sortable()`. Unknown filters/operators → 422; unknown sort → default. Never pass request input to `orderBy` directly.
+- Backend: controllers `use HandlesListQuery` and whitelist `filterable()` (field → `relative` + `columns`, or `apply` callback for derived fields such as a model scope) and `sortable()`. Unknown filters/operators → 422; unknown sort → default. Never pass request input to `orderBy` directly.
+
+### Dates & derived fields
+- Date-only values travel as local `"YYYY-MM-DD"` strings both ways: model casts `date:Y-m-d`, requests validate `date_format:Y-m-d`. Bind PrimeVue `DatePicker` through `parseIsoDate` / `toIsoDate` (`app/utils/dates.ts`) — never put a `Date` in a payload (JSON serializes it in UTC and shifts the day).
+- Don't store values derivable from other columns (e.g. `is_minorenne` from `data_nascita`): expose them as an appended model accessor plus a query scope for filtering.
 
 ### Event bus for inter-component refresh
 Convention: `Model:action` (e.g. `Students:refreshList`, `Students:refreshForm`). Used to trigger refresh in sibling components after CRUD operations.
